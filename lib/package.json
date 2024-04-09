@@ -1,0 +1,52 @@
+{
+  "name": "areille",
+  "version": "1.0.20",
+  "description": "lib",
+  "private": false,
+  "scripts": {
+    "tsc": "NODE_OPTIONS=--max-old-space-size=1024 tsc",
+    "lint": "eslint ./ --fix"
+  },
+  "author": "Ayokunle Sunmola",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "handlebars": "^4.7.8",
+    "js-logger": "^1.6.1",
+    "jsonwebtoken": "^9.0.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.6.0",
+    "node-cron": "^3.0.3",
+    "sequelize": "^6.32.1",
+    "socket.io": "^4.7.2",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/cors": "^2.8.13",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/morgan": "^1.9.4",
+    "@types/multer": "^1.4.7",
+    "@types/node-cron": "^3.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayotycoon/areille.git"
+  },
+  "keywords": [
+    "areille",
+    "rest",
+    "express"
+  ],
+  "bugs": {
+    "url": "https://github.com/ayotycoon/areille/issues"
+  },
+  "homepage": "https://github.com/ayotycoon/areille#readme"
+}

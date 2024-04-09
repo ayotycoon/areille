@@ -1,0 +1,12 @@
+{
+  "name": "restserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node Server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
