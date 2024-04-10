@@ -7,7 +7,8 @@ import Person from './Person';
 @component()
 export class Datasource {
   @autowired()
-  private datasourceProvider: DatasourceSelector = DatasourceSelector.prototype;
+  protected datasourceProvider: DatasourceSelector =
+    DatasourceSelector.prototype;
   getConnection() {
     return null as unknown as Sequelize;
   }

@@ -16,6 +16,7 @@ function getConfig() {
     ] as string[],
     SQL_DATABASE: process.env.SQL_DATABASE as string,
     SQL_DATABASE_USERNAME: process.env.SQL_DATABASE_USERNAME as string,
+    SQL_DATABASE_STORAGE: process.env.SQL_DATABASE_STORAGE as string,
     SQL_DATABASE_PASSWORD: process.env.SQL_DATABASE_PASSWORD as string,
     SQL_DATABASE_HOST: process.env.SQL_DATABASE_HOST as string,
     SQL_DATABASE_PORT: parseInt(process.env.SQL_DATABASE_PORT || '0'),

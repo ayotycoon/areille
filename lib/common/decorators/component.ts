@@ -10,11 +10,16 @@ export default function component(args?: ComponentArgs) {
     descriptor?: PropertyDescriptor,
   ) => {
     const arielleApp = ArielleApp.getInstanceByAppName();
-    arielleApp.registerBeanDecorator(component.name, 0, async () => {
+    arielleApp.registerBeanDecorator(component.name, 0, () => {
       const name = args?.name || getConstructorName(target);
+      if (arielleApp.getSingleton(target, false)) {
+        getLogger().warn(`${name} has already initialized`);
+        return;
+      }
       if (target.prototype?.constructor) {
         const parentTarget = Object.getPrototypeOf(target.prototype);
         const parentName = arielleApp.getSingleton(parentTarget, false)?.name;
+
         if (parentName) {
           getLogger().debug(`registering child ${name}`);
           return child(name, target, propertyKey, descriptor, args);
@@ -59,7 +64,6 @@ function child(
 
   main(name, target, propertyKey, descriptor, optionalArgs, true);
   const obj = arielleApp.getSingleton(target, false);
-  if (!obj) return;
   obj.primaryBean = target;
   obj.parent = parentName;
 

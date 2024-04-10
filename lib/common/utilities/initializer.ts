@@ -1,6 +1,6 @@
 import fs from 'fs';
 import getConfig from '../../common/utilities/config';
-import { BeanConfig } from '../type';
+import { BeanConfig, StartApplicationArgs } from '../type';
 import getLogger, { COLORS, colorText } from './logger';
 
 const allowedExt = new Set(['js', 'ts']);
@@ -44,22 +44,26 @@ export function getFiles(config: BeanConfig, dir: string) {
 }
 
 export async function importAnnotatedModules({
+  shouldScanLib = true,
   scanDir,
   libDir,
-}: {
-  scanDir: string;
-  libDir: string;
-}) {
-  const config = {
-    blockedFilesOrDir: getConfig().ENV.IGNORE_DIR,
-    originalDir: scanDir,
-  };
-  async function importer(_scanDir: string) {
-    const files = getFiles(config, _scanDir);
+  Classes,
+}: StartApplicationArgs & { libDir: string }) {
+  async function importer(dir: string) {
+    const config = {
+      blockedFilesOrDir: getConfig().ENV.IGNORE_DIR,
+      originalDir: dir,
+    };
+    const files = getFiles(config, dir);
     for (const file of files) {
       await import(file.fullPath);
     }
   }
-  await importer(libDir);
-  await importer(scanDir);
+  if (shouldScanLib) await importer(libDir);
+  if (scanDir) await importer(scanDir);
+  if (Classes && Classes.length != 0) {
+    for (const Clazz of Classes) {
+      getLogger().info(`manually importing ${Clazz.name}`);
+    }
+  }
 }

@@ -13,11 +13,23 @@ export default class ArielleApp {
   public singleton = new AnyKeyMap<SingletonObj>(2);
   public decoratorLifecycle = new Map<string, (() => Promise<void> | void)[]>();
   public decoratorFunctions: Map<string, Map<string, DecoratorObj>> = new Map();
-
   public registeredDecorators = new Map<
     string,
     { priority: number; decoratorName: string; fns: any[] }
   >();
+  private instance: string;
+  constructor(instance: string) {
+    this.instance = instance;
+  }
+  private reset() {
+    this.singleton = new AnyKeyMap<SingletonObj>(2);
+    this.decoratorLifecycle = new Map<string, (() => Promise<void> | void)[]>();
+    this.decoratorFunctions = new Map();
+    this.registeredDecorators = new Map<
+      string,
+      { priority: number; decoratorName: string; fns: any[] }
+    >();
+  }
 
   public instantiateSingleton(
     target: any,
@@ -111,25 +123,32 @@ export default class ArielleApp {
     return beans.flat().map((bean) => this.getSingleton<T>(bean).clazz);
   }
 
-  public getAllSingleton() {
-    return this.singleton;
+  public deRegister() {
+    this.reset();
+    delete customGlobal.appInstance[this.instance];
   }
 
   public processSingletonMethods(
-    type: string,
+    decoratorName: string,
     target: any,
     propertyKey?: string,
     descriptor?: PropertyDescriptor,
   ) {
-    if (!this.getAllBeanFunctions().has(type))
-      this.getAllBeanFunctions().set(type, new Map());
+    if (!this.getAllBeanFunctions().has(decoratorName))
+      this.getAllBeanFunctions().set(decoratorName, new Map());
 
     const obj = new DecoratorObj({
       args: {},
       target: descriptor ? target.constructor : target,
     });
     const singleton = this.getSingleton(target);
-    const className = singleton?.name as any as string;
+    // singleton.decorators
+    const className = singleton.name;
+
+    if (target && !propertyKey && !descriptor) {
+      singleton.decorators.add(decoratorName);
+    }
+
     if (descriptor) {
       const method = descriptor.value;
 
@@ -140,10 +159,10 @@ export default class ArielleApp {
       obj.fn = descriptor.value;
     }
 
-    if (!this.getDecoratorFunctions(type)?.get(className)) {
-      this.getDecoratorFunctions(type)?.set(className, []);
+    if (!this.getDecoratorFunctions(decoratorName)?.get(className)) {
+      this.getDecoratorFunctions(decoratorName)?.set(className, []);
     }
-    this.getDecoratorFunctions(type)?.get(className)?.push(obj);
+    this.getDecoratorFunctions(decoratorName)?.get(className)?.push(obj);
 
     return obj;
   }
@@ -178,7 +197,7 @@ export default class ArielleApp {
     for (const obj of arr) {
       // bug
       if (last && obj.decoratorName != last) {
-        this.runLifecycleAnnotationFunctions(last);
+        await this.runLifecycleAnnotationFunctions(last);
       }
       for (const fn of obj.fns || []) {
         await fn();
@@ -189,9 +208,9 @@ export default class ArielleApp {
       last = obj.decoratorName;
     }
     if (arr.length == 1) {
-      this.runLifecycleAnnotationFunctions(arr[0].decoratorName);
+      await this.runLifecycleAnnotationFunctions(arr[0].decoratorName);
     }
-    this.runLifecycleAnnotationFunctions('all');
+    await this.runLifecycleAnnotationFunctions('all');
   }
 
   // public preImport(...Clazzs: any[]) {
@@ -207,7 +226,7 @@ export default class ArielleApp {
   }
 
   public static registerAppInstance(instance = 'default') {
-    const g = new ArielleApp();
+    const g = new ArielleApp(instance);
     if (!customGlobal.appInstance) {
       customGlobal.appInstance = {};
     }
@@ -237,5 +256,12 @@ export default class ArielleApp {
       });
     }
     this.registeredDecorators.get(decoratorName)?.fns.push(cb);
+  }
+  private initialization: Promise<void> = undefined as any;
+  public setInitializationPromise(promise: Promise<void>) {
+    this.initialization = promise;
+  }
+  public waitTillInitialization() {
+    return this.initialization;
   }
 }

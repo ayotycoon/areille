@@ -19,3 +19,8 @@ export interface BeanConfig {
   blockedFilesOrDir: string[];
   originalDir: string;
 }
+export interface StartApplicationArgs {
+  scanDir?: string;
+  shouldScanLib?: boolean;
+  Classes?: Clazz[];
+}

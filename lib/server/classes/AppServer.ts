@@ -12,6 +12,10 @@ export default class AppServer {
   public start() {
     this.arielleApp = ArielleApp.getInstanceByAppName();
   }
+  public stop() {
+    this.arielleApp.deRegister();
+    this.arielleApp = null as any;
+  }
 
   async beforeServerStart() {
     await this.arielleApp.runAnnotationFunctions('beforeServerStart');
@@ -26,5 +30,9 @@ export default class AppServer {
   async afterDbConnection() {
     await this.arielleApp.runAnnotationFunctions('migration');
     await this.arielleApp.runAnnotationFunctions('afterDbConnection');
+  }
+
+  async waitTillInitialization() {
+    return await this.arielleApp.waitTillInitialization();
   }
 }

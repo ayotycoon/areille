@@ -22,6 +22,7 @@ export default class SingletonObj<T extends Clazz = Clazz> {
   autowiredCandidates: Clazz[] = [];
   primaryBean: Clazz;
   beans: string[][] = [];
+  decorators: Set<string> = new Set();
   parent?: string;
 
   constructor(props: Props<T>) {

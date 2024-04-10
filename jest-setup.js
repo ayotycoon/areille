@@ -20,6 +20,6 @@ function moveMocks(_path = "", count = 0) {
 }
 
 module.exports = async function (globalConfig, projectConfig) {
-  moveMocks("__mocks__");
+  moveMocks(path.resolve(__dirname, "__mocks__"));
   globalThis.movedFiles = movedFiles;
 };

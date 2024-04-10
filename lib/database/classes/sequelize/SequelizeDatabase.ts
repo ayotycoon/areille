@@ -10,8 +10,8 @@ import { Datasource } from '../Datasource';
 
 @component()
 export class SequelizeDatabase extends Datasource {
-  private connection = null as unknown as Sequelize;
-  private entities: (SequelizeEntityArgs<any, any> & {
+  protected connection = null as unknown as Sequelize;
+  protected entities: (SequelizeEntityArgs<any, any> & {
     Clazz?: ModelStatic<Model<any, any>>;
   })[] = [];
 
@@ -34,6 +34,7 @@ export class SequelizeDatabase extends Datasource {
         host: getConfig().ENV.SQL_DATABASE_HOST,
         port: getConfig().ENV.SQL_DATABASE_PORT,
         dialect: getConfig().ENV.SQL_DATABASE_DIALECT as any,
+        storage: getConfig().ENV.SQL_DATABASE_STORAGE as any,
         logging: (msg) =>
           getConfig().ENV.SQL_LOG_QUERY && getLogger().debug(msg),
       },
@@ -49,15 +50,12 @@ export class SequelizeDatabase extends Datasource {
     return this.connection;
   };
 
-  private async syncDB() {
-    await this.connection.query('SET FOREIGN_KEY_CHECKS = 0');
-
+  protected async syncDB() {
     if (getConfig().ENV.SQL_DATABASE_FORCE_SYNC_DB) {
       await this.connection.sync({ force: true });
     } else {
       await this.connection.sync();
     }
-    await this.connection.query('SET FOREIGN_KEY_CHECKS = 1');
   }
 
   public registerModel(

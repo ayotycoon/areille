@@ -4,7 +4,7 @@ import getConfig from './config';
 
 const logger = Logger as unknown as GlobalLogger;
 let initialized = false;
-export const getLogger = () => {
+const getLogger = () => {
   if (initialized) return logger;
   initialized = true;
   Logger.useDefaults();

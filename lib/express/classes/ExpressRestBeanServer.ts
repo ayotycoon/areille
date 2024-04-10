@@ -13,11 +13,21 @@ import { ExpressRouteProcessor } from './ExpressRouteProcessor';
 @component({ order: -2 })
 export default class ExpressRestBeanServer extends AppServer {
   private app!: Express;
+  private server!: any;
   @autowired()
   private expressRouteProcessor = ExpressRouteProcessor.prototype;
 
   async stop() {
-    throw new Error('Server stopped');
+    super.stop();
+    if (!this.server) return;
+    const serverPromise = () =>
+      new Promise((resolve) => {
+        this.server.close(function () {
+          resolve(true);
+        });
+      });
+    await serverPromise();
+    this.server = null;
   }
   private config() {
     this.app = express();
@@ -27,15 +37,30 @@ export default class ExpressRestBeanServer extends AppServer {
     this.app.use(cors({ origin: '*', credentials: true }));
   }
   public async start() {
-    await super.start();
-    this.config();
-    this.expressRouteProcessor.process(this.arielleApp, this.app);
-    await this.beforeServerStart();
-    this.app.listen(getConfig().ENV.PORT, async () => {
-      getLogger().info(
-        `${colorText(COLORS.Magenta, 'REST Server started')} on port ${getConfig().ENV.PORT} [env=${getConfig().ENV.NODE_ENV}]`,
-      );
-      await this.afterServerStart();
-    });
+    const fn = async () => {
+      super.start();
+      this.config();
+      this.expressRouteProcessor.process(this.arielleApp, this.app);
+      await this.beforeServerStart();
+      const serverPromise = () =>
+        new Promise((resolve) => {
+          this.server = this.app.listen(getConfig().ENV.PORT, async () => {
+            resolve(getConfig().ENV.PORT);
+            getLogger().info(
+              `${colorText(COLORS.Magenta, 'REST Server started')} on port ${getConfig().ENV.PORT} [env=${getConfig().ENV.NODE_ENV}]`,
+            );
+            await this.afterServerStart();
+          });
+        });
+      await serverPromise();
+    };
+    this.initialization = fn();
+    await this.initialization;
+  }
+
+  private initialization: Promise<void> = undefined as any;
+  public async waitTillInitialization() {
+    await super.waitTillInitialization();
+    return this.initialization;
   }
 }

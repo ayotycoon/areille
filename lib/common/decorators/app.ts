@@ -7,7 +7,7 @@ export default function app(instance?: string) {
   return (target: any, propertyKey: string) => {
     const arielleApp = ArielleApp.getInstanceByAppName(instance);
 
-    arielleApp.registerBeanDecorator(app.name, 5, async () => {
+    arielleApp.registerBeanDecorator(app.name, 5, () => {
       arielleApp.processSingletonMethods(
         app.name,
         target,
