@@ -27,6 +27,10 @@ class Mocked {
   getBeanChildren = jest.fn(actualInstance.getBeanChildren);
   getAllSingleton = jest.fn(actualInstance.getAllSingleton);
   processSingletonMethods = jest.fn(actualInstance.processSingletonMethods);
+  setInitializationPromise = jest.fn(actualInstance.setInitializationPromise);
+  processAnnotationProcessor = jest.fn(
+    actualInstance.processAnnotationProcessor,
+  );
   runLifecycleAnnotationFunctions = jest.fn(
     actualInstance.runLifecycleAnnotationFunctions,
   );

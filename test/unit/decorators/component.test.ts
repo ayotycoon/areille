@@ -4,6 +4,8 @@ import getLogger from '../../../lib/common/utilities/logger';
 import { getMockedObj } from '../utils/mockedClass';
 
 jest.mock('../../../lib/common/ArielleApp');
+jest.mock('areille/server/classes/AppServer');
+
 describe('component test ', () => {
   afterEach(() => {
     // clear mocks
@@ -111,7 +113,7 @@ describe('component test ', () => {
         childMockedBObj.property,
         childMockedBObj.descriptor,
       );
-    }).toThrowError('Maximum number of bean reached for Sample');
+    }).toThrow('Maximum number of bean reached for Sample');
   });
   test('should throw multiple bean error', () => {
     const mockedObj = getMockedObj();
@@ -130,7 +132,7 @@ describe('component test ', () => {
         childMockedBObj.property,
         childMockedBObj.descriptor,
       );
-    }).toThrowError(
+    }).toThrow(
       'Multiple bean of type Sample found. Choose a primary from [ExtendedSampleA,ExtendedSampleB]',
     );
   });
@@ -151,6 +153,6 @@ describe('component test ', () => {
         childMockedBObj.property,
         childMockedBObj.descriptor,
       );
-    }).toThrowError('Multiple bean of type Sample was marked as primary');
+    }).toThrow('Multiple bean of type Sample was marked as primary');
   });
 });
