@@ -1,4 +1,4 @@
-import AnyKeyMap from '../../../lib/common/utilities/AnyKeyMap';
+import AnyKeyMap from 'areille/common/utilities/AnyKeyMap';
 
 describe('AnyKeyMap test ', () => {
   test('should be able to set and get single keys ', () => {

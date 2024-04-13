@@ -13,7 +13,7 @@ export class Datasource {
     return null as unknown as Sequelize;
   }
 
-  disconnect() {}
+  async disconnect() {}
 
   public connect = async () => {
     return null as unknown as Sequelize;
@@ -40,8 +40,7 @@ export class Datasource {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async beanMigrationUtils(fileName: string) {
     return {
-      getMigrationFileStatus: () =>
-        Promise.any('PENDING') as Promise<'PENDING' | 'FAIL' | 'SUCCESS'>,
+      getMigrationFileStatus: () => 'PENDING' as 'PENDING' | 'FAIL' | 'SUCCESS',
       success: () => Promise.resolve(),
       fail: () => Promise.resolve(),
     };

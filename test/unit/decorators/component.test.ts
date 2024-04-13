@@ -1,9 +1,9 @@
-import ArielleApp from '../../../lib/common/ArielleApp';
-import component from '../../../lib/common/decorators/component';
-import getLogger from '../../../lib/common/utilities/logger';
+import ArielleApp from 'areille/common/ArielleApp';
+import component from 'areille/common/decorators/component';
+import getLogger from 'areille/common/utilities/logger';
 import { getMockedObj } from '../utils/mockedClass';
 
-jest.mock('../../../lib/common/ArielleApp');
+jest.mock('areille/common/ArielleApp');
 jest.mock('areille/server/classes/AppServer');
 
 describe('component test ', () => {
@@ -12,6 +12,7 @@ describe('component test ', () => {
     ArielleApp.getInstanceByAppName().deRegister();
     jest.clearAllMocks();
   });
+
   test('should be able to annotate main bean', () => {
     const mockedObj = getMockedObj();
     component()(mockedObj.Clazz, mockedObj.property, mockedObj.descriptor);

@@ -1,9 +1,9 @@
-import ArielleApp from '../../../lib/common/ArielleApp';
-import selector from '../../../lib/common/decorators/selector';
-import getLogger from '../../../lib/common/utilities/logger';
+import ArielleApp from 'areille/common/ArielleApp';
+import selector from 'areille/common/decorators/selector';
+import getLogger from 'areille/common/utilities/logger';
 import { getMockedObj } from '../utils/mockedClass';
 
-jest.mock('../../../lib/common/ArielleApp');
+jest.mock('areille/common/ArielleApp');
 jest.mock('areille/server/classes/AppServer');
 describe('selector test ', () => {
   afterEach(() => {

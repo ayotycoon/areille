@@ -7,8 +7,8 @@ const blockedFilesOrDir = [
   `.d.ts`,
   'getLogger().ts',
 ];
-function getConfig() {
-  const environmentConfig = {
+const configFromProcess = () => {
+  return {
     NODE_ENV: process.env.NODE_ENV as string,
     IGNORE_DIR: [
       ...blockedFilesOrDir,
@@ -38,6 +38,12 @@ function getConfig() {
     JWT_ISSUER: process.env.JWT_ISSUER as string,
     REST_PASSWORD_OTP_EXPIRE_TIME: process.env.REST_PASSWORD_OTP_EXPIRE_TIME,
   };
+};
+export type KnownENV = ReturnType<typeof configFromProcess>;
+let environmentConfig = configFromProcess();
+
+function getConfig() {
+  environmentConfig = configFromProcess();
 
   return {
     ENV: environmentConfig,

@@ -38,7 +38,7 @@ export default function migration(id: string = '') {
 async function processMigration(arielleApp: ArielleApp, fileName: string) {
   const db = arielleApp.getAutoWireSingleton(Datasource);
   const utils = await db.beanMigrationUtils(fileName);
-  const status = await utils.getMigrationFileStatus();
+  const status = utils.getMigrationFileStatus();
   if (status === 'SUCCESS') {
     getLogger().info(`Ignoring migration ${colorText(COLORS.Red, fileName)}`);
     return;

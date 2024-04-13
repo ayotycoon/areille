@@ -12,15 +12,15 @@ import { Datasource } from '../Datasource';
 export class SequelizeDatabase extends Datasource {
   protected connection = null as unknown as Sequelize;
   protected entities: (SequelizeEntityArgs<any, any> & {
-    Clazz?: ModelStatic<Model<any, any>>;
+    Clazz: ModelStatic<Model<any, any>>;
   })[] = [];
 
   getConnection() {
     return this.connection;
   }
 
-  disconnect() {
-    this.connection.close();
+  async disconnect() {
+    await this.connection.close();
     this.connection = null as any;
   }
 
@@ -64,8 +64,7 @@ export class SequelizeDatabase extends Datasource {
       Clazz?: ModelStatic<Model<any, any>>;
     },
   ) {
-    entity.Clazz = Clazz;
-    this.entities.push(entity);
+    this.entities.push({ ...entity, Clazz });
   }
 
   protected addFieldModifications = (
@@ -92,8 +91,6 @@ export class SequelizeDatabase extends Datasource {
   private initDatabaseFields = async () => {
     for (const entity of this.entities) {
       const Clazz = entity.Clazz;
-      if (!Clazz) continue;
-      delete entity.Clazz;
       const options = entity.options || {};
       this.addFieldModifications(entity, options);
 
@@ -112,7 +109,7 @@ export class SequelizeDatabase extends Datasource {
     existingTransaction?: Transaction,
   ) {
     const sequelizeTransaction =
-      existingTransaction || (await this.getConnection()?.transaction());
+      existingTransaction || (await this.connection?.transaction());
     if (!sequelizeTransaction) throw new GenericError('transaction not found');
     try {
       const result = await cb(sequelizeTransaction);
@@ -125,7 +122,7 @@ export class SequelizeDatabase extends Datasource {
   }
 
   async beanMigrationUtils(fileName: string) {
-    const SystemMigrationTracker = this.getConnection().define(
+    const SystemMigrationTracker = this.connection.define(
       'system_migration_trackers',
       {
         signature: {
@@ -160,9 +157,7 @@ export class SequelizeDatabase extends Datasource {
       });
     }
 
-    async function getMigrationFileStatus(): Promise<
-      'PENDING' | 'FAIL' | 'SUCCESS'
-    > {
+    function getMigrationFileStatus(): 'PENDING' | 'FAIL' | 'SUCCESS' {
       return entity.status;
     }
 

@@ -12,7 +12,7 @@ export default class DecoratorObj<T = {}> {
   constructor(props: Props) {
     this.args = props.args;
     this.target = props.target;
-    if (props.fn) this.fn = props.fn;
+    this.fn = props.fn;
   }
 
   public addArgs(obj: Partial<T>) {
