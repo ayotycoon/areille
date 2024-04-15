@@ -24,6 +24,11 @@ export default class AnyKeyMap<V> {
     };
   };
 
+  keys = (i = 0) => {
+    if (i > this.maxKeysIndex) throw Error('index out of bounds');
+    return this.map.keys();
+  };
+
   get = (i = 0) => {
     if (i > this.maxKeysIndex) throw Error('index out of bounds');
     return (key: any) => {

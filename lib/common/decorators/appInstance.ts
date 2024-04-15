@@ -3,13 +3,13 @@ import SingletonObj from '../classes/SingletonObj';
 import getLogger, { COLORS, colorText } from '../utilities/logger';
 import { assignValueToBeanProperty } from './utils/beanPropertyUtils';
 
-export default function app(instance?: string) {
+export default function appInstance(instance?: string) {
   return (target: any, propertyKey: string) => {
     const arielleApp = ArielleApp.getInstanceByAppName(instance);
 
-    arielleApp.registerBeanDecorator(app.name, 5, () => {
+    arielleApp.registerBeanDecorator(target, appInstance.name, 5, () => {
       arielleApp.processSingletonMethods(
-        app.name,
+        appInstance.name,
         target,
         propertyKey,
         undefined,
@@ -18,7 +18,7 @@ export default function app(instance?: string) {
       function processSingletonCandidates(singletonObj: SingletonObj) {
         assignValueToBeanProperty(singletonObj, propertyKey, arielleApp);
         getLogger().info(
-          `${colorText(COLORS.Magenta, `Assigning app instance`)} ${singletonObj.name}.${propertyKey} ${colorText(COLORS.Magenta, 'to')}`,
+          `${colorText(COLORS.Blue, `[app]`)} ${colorText(COLORS.Magenta, `Assigning appInstance`)}${colorText(COLORS.Magenta, arielleApp.getInstance())} ${colorText(COLORS.Magenta, 'to')} ${singletonObj.name}.${propertyKey} `,
         );
       }
       const singletonObj = arielleApp.getSingleton(target);

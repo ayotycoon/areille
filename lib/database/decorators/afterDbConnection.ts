@@ -12,7 +12,7 @@ export function afterDbConnection(
   descriptor?: PropertyDescriptor,
 ) {
   const arielleApp = ArielleApp.getInstanceByAppName();
-  arielleApp.registerBeanDecorator('afterDbConnection', 10, () => {
+  arielleApp.registerBeanDecorator(target, afterDbConnection.name, 10, () => {
     arielleApp.processSingletonMethods(
       'afterDbConnection',
       target,

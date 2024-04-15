@@ -1,11 +1,11 @@
 import ArielleApp from 'areille/common/ArielleApp';
 import startApplication from 'areille/common/decorators/startApplication';
-import { importAnnotatedModules } from 'areille/common/utilities/initializer';
-import { getMockedObj } from '../utils/mockedClass';
+import { importAnnotatedModules } from 'areille/common/utilities/scanner';
+import { getMockedObj } from '../../utils/mockedClass';
 
 jest.mock('areille/server/classes/AppServer');
 jest.mock('areille/common/ArielleApp');
-jest.mock('areille/common/utilities/initializer');
+jest.mock('areille/common/utilities/scanner');
 describe('startApplication test ', () => {
   let app: ArielleApp;
   beforeEach(() => {

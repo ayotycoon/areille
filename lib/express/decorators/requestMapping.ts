@@ -44,7 +44,7 @@ export function requestMapping(
     propertyKey?: string,
     descriptor?: PropertyDescriptor,
   ) => {
-    arielleApp.registerBeanDecorator('requestMapping', 10, () => {
+    arielleApp.registerBeanDecorator(target, requestMapping.name, 7, () => {
       const obj = arielleApp.processSingletonMethods(
         'requestMapping',
         target,

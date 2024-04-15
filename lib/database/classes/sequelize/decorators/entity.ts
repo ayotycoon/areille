@@ -10,7 +10,7 @@ export default function entity<
 >(obj: SequelizeEntityArgs<MS, M>) {
   const arielleApp = ArielleApp.getInstanceByAppName();
   return (target: any) => {
-    arielleApp.registerBeanDecorator(entity.name, 3, () => {
+    arielleApp.registerBeanDecorator(target, entity.name, 3, () => {
       const dBInstance = arielleApp.getAutoWireSingleton(SequelizeDatabase);
       dBInstance.registerModel(target, obj);
     });

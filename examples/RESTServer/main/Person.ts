@@ -9,8 +9,9 @@ import { DataTypes, Model } from 'sequelize';
   // Model attributes are defined here
   fields: {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
     password: DataTypes.STRING,
     username: DataTypes.STRING,
@@ -18,7 +19,7 @@ import { DataTypes, Model } from 'sequelize';
   },
 })
 export default class Person extends Model {
-  declare id?: string | number;
+  declare id?: number;
   declare password?: string;
   declare username?: string;
   declare enabled?: boolean;

@@ -1,13 +1,17 @@
 import path from 'path';
+import { setConfig } from '../../common/utilities/config';
 import AppServer from '../../server/classes/AppServer';
 import ArielleApp from '../ArielleApp';
 import { StartApplicationArgs } from '../type';
-import { importAnnotatedModules } from '../utilities/initializer';
+import { importAnnotatedModules } from '../utilities/scanner';
 
 async function fn(args: { target: any } & StartApplicationArgs) {
+  if (args.ENV) {
+    setConfig({ ENV: args.ENV });
+  }
   const libDir = path.resolve(__dirname, '../../');
   const arielleApp = ArielleApp.getInstanceByAppName();
-  await importAnnotatedModules({ ...args, libDir });
+  await importAnnotatedModules(arielleApp, { ...args, libDir });
   await arielleApp.processAnnotationProcessor();
   (arielleApp.getSingleton(args.target).clazz as AppServer).start();
 }

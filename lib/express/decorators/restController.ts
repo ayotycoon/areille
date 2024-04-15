@@ -8,7 +8,7 @@ export function restController(urlPath = '', args?: CommonConfigArgs) {
     propertyKey?: string,
     descriptor?: PropertyDescriptor,
   ) => {
-    arielleApp.registerBeanDecorator('restController', 9, () => {
+    arielleApp.registerBeanDecorator(target, restController.name, 6, () => {
       const className = arielleApp.getSingleton(target)?.name;
       const x = arielleApp.processSingletonMethods(
         'restController',

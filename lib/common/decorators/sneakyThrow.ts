@@ -1,6 +1,6 @@
 import ArielleApp from '../ArielleApp';
 import { getConstructorName, getTargetKeys } from '../utilities';
-import getLogger from '../utilities/logger';
+import getLogger, { COLORS, colorText } from '../utilities/logger';
 
 function getName(className: string, propertyKey: string) {
   if (className) return `${className}.${propertyKey}`;
@@ -22,7 +22,9 @@ const _sneakyThrow = (
   const method = descriptor.value;
   descriptor.value = (...args: any) => {
     try {
-      getLogger().info(`Executing [${getName(className, propertyKey)}]`);
+      getLogger().info(
+        `${colorText(COLORS.Blue, '[sneakyThrow]')} -  Executing [${getName(className, propertyKey)}]`,
+      );
       const bean = arielleApp.getSingleton(target, false)?.clazz;
       const res = method.apply(bean || target, args);
       if (res instanceof Promise) {

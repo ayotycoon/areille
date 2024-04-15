@@ -3,7 +3,7 @@ import ArielleApp from '../ArielleApp';
 const after = (decorator: Function) => {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const arielleApp = ArielleApp.getInstanceByAppName();
-    arielleApp.registerBeanDecoratorLifecycle(decorator.name, () => {
+    arielleApp.registerBeanDecoratorLifecycle(target, decorator.name, () => {
       const method = descriptor.value;
       const classSingletonObj = arielleApp.getSingleton(target);
       descriptor.value = () => {

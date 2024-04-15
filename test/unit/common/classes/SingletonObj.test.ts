@@ -1,6 +1,6 @@
 import SingletonObj from 'areille/common/classes/SingletonObj';
 import { ComponentArgs } from 'areille/common/type';
-import { getMockedObj } from '../../utils/mockedClass';
+import { getMockedObj } from '../../../utils/mockedClass';
 jest.mock('areille/server/classes/AppServer');
 
 describe('SingletonObj test ', () => {
