@@ -6,12 +6,17 @@ export function beforeServerStart(
   descriptor?: PropertyDescriptor,
 ) {
   const arielleApp = ArielleApp.getInstanceByAppName();
-  arielleApp.registerBeanDecorator('beforeServerStart', 10, async () => {
-    arielleApp.processSingletonMethods(
-      'beforeServerStart',
-      target,
-      propertyKey,
-      descriptor,
-    );
-  });
+  arielleApp.registerBeanDecorator(
+    target,
+    beforeServerStart.name,
+    10,
+    async () => {
+      arielleApp.processSingletonMethods(
+        'beforeServerStart',
+        target,
+        propertyKey,
+        descriptor,
+      );
+    },
+  );
 }

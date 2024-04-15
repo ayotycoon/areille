@@ -48,6 +48,7 @@ export class ExpressRouteProcessor {
         const preConfiguredAuthHandler =
           this.expressRouteConfigurator.getPreconfiguredHandler(fullUrl);
         if (preConfiguredAuthHandler) {
+          if (authHandlers?.indexOf(preConfiguredAuthHandler) !== -1) continue;
           authHandlers = authHandlers?.filter((a) => a !== 'OPEN');
           authHandlers.unshift(preConfiguredAuthHandler);
         }
@@ -79,13 +80,13 @@ export class ExpressRouteProcessor {
               ),
           );
           getLogger().info(
-            `${colorText(COLORS.Magenta, 'Registering requestMapping')} ${requestMapping.args?.method} ${colorText(COLORS.Blue, authHandlersString)} ${fullUrl}`,
+            `${colorText(COLORS.Blue, `[routing]`)} - ${requestMapping.args?.method} ${colorText(COLORS.Magenta, authHandlersString)} ${fullUrl}`,
           );
 
           continue;
         }
         getLogger().info(
-          `${colorText(COLORS.Magenta, 'Registering requestMapping')} ${requestMapping.args?.method} ${colorText(COLORS.Blue, authHandlersString)} ${fullUrl}`,
+          `${colorText(COLORS.Blue, `[routing]`)} - ${requestMapping.args?.method} ${colorText(COLORS.Magenta, authHandlersString)} ${fullUrl}`,
         );
 
         controllerRouter[method](

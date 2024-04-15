@@ -2,8 +2,8 @@ import * as s from "sequelize";
 
 function mockedEntity() {
   return {
-    signature: jest.fn(),
-    status: jest.fn(),
+    signature: "str",
+    status: "PENDING",
     save: jest.fn(),
   };
 }

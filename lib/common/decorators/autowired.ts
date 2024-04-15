@@ -15,7 +15,7 @@ export default function autowired(args?: AutowiredArgs) {
   ) => {
     const arielleApp = ArielleApp.getInstanceByAppName(args?.instance);
 
-    arielleApp.registerBeanDecorator(autowired.name, 1, () => {
+    arielleApp.registerBeanDecorator(target, autowired.name, 1, () => {
       arielleApp.processSingletonMethods(
         autowired.name,
         target,
@@ -64,7 +64,7 @@ export default function autowired(args?: AutowiredArgs) {
             ? `Obj<${candidateName}>`
             : candidateName;
           getLogger().info(
-            `${colorText(COLORS.Magenta, `Autowiring`)} ${singletonObj.name}.${propertyKey} ${colorText(COLORS.Magenta, 'to')} ${autowiredValue} `,
+            `${colorText(COLORS.Blue, '[autowired]')} - ${colorText(COLORS.Magenta, `Autowiring`)} ${singletonObj.name}.${propertyKey} ${colorText(COLORS.Magenta, 'to')} ${autowiredValue} `,
           );
         } else {
           // autowiring a method

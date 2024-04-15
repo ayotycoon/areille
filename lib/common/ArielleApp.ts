@@ -11,24 +11,33 @@ const customGlobal: typeof globalThis & {
 
 export default class ArielleApp {
   public singleton = new AnyKeyMap<SingletonObj>(2);
-  public decoratorLifecycle = new Map<string, (() => Promise<void> | void)[]>();
+  public decoratorLifecycle = new Map<
+    string,
+    { target: any; fn: () => Promise<void> | void }[]
+  >();
   public decoratorFunctions: Map<string, Map<string, DecoratorObj>> = new Map();
   public registeredDecorators = new Map<
     string,
-    { priority: number; decoratorName: string; fns: any[] }
+    {
+      priority: number;
+      decoratorName: string;
+      obj: { target: any; fn: () => Promise<void> | void }[];
+    }
   >();
+  private excludedClasses = new Set<Clazz>();
   private instance: string;
+  public getInstance() {
+    return this.instance;
+  }
   constructor(instance: string) {
     this.instance = instance;
   }
   private reset() {
     this.singleton = new AnyKeyMap<SingletonObj>(2);
-    this.decoratorLifecycle = new Map<string, (() => Promise<void> | void)[]>();
+    this.decoratorLifecycle = new Map();
     this.decoratorFunctions = new Map();
-    this.registeredDecorators = new Map<
-      string,
-      { priority: number; decoratorName: string; fns: any[] }
-    >();
+    this.registeredDecorators = new Map();
+    this.excludedClasses = new Set();
   }
 
   public instantiateSingleton(
@@ -45,12 +54,12 @@ export default class ArielleApp {
         throw new Error(`bean with name ${name} already exists`);
       }
       getLogger().info(
-        `${colorText(COLORS.Red, 'ignoring')} ${colorText(COLORS.Magenta, 'registering bean')} ${name}`,
+        `${colorText(COLORS.Blue, '[component]')} -  ${colorText(COLORS.Red, 'ignoring')} ${colorText(COLORS.Magenta, 'registering bean')} ${name}`,
       );
       return val;
     }
     getLogger().info(
-      `${colorText(COLORS.Magenta, `Registering bean - ${isChild ? 'C' : 'M'}`)} ${name}`,
+      `${colorText(COLORS.Blue, '[component]')} - ${colorText(COLORS.Magenta, `Registering bean - ${isChild ? 'C' : 'M'}`)} ${name}`,
     );
 
     const clazz = new Clazz();
@@ -134,6 +143,7 @@ export default class ArielleApp {
     propertyKey?: string,
     descriptor?: PropertyDescriptor,
   ) {
+    if (this.isClassExcluded(target)) return;
     if (!this.getAllBeanFunctions().has(decoratorName))
       this.getAllBeanFunctions().set(decoratorName, new Map());
 
@@ -168,11 +178,12 @@ export default class ArielleApp {
   }
 
   public async runLifecycleAnnotationFunctions(decoratorName: string) {
-    for (const fn of this.decoratorLifecycle.get(decoratorName) || []) {
-      await fn();
+    for (const obj of this.decoratorLifecycle.get(decoratorName) || []) {
+      if (this.isClassExcluded(obj.target)) continue;
+      await obj.fn();
     }
     getLogger().info(
-      `${colorText(COLORS.Magenta, 'Completed Lifecycle')} ${decoratorName}`,
+      `${colorText(COLORS.Blue, `[${decoratorName}]`)} - Completed decorator Lifecycle`,
     );
   }
 
@@ -181,7 +192,7 @@ export default class ArielleApp {
       if (fn) await fn();
     }
     getLogger().info(
-      `${colorText(COLORS.Magenta, 'Completed runAnnotationFunctions')} ${decoratorName}`,
+      `${colorText(COLORS.Blue, `[${decoratorName}]`)} - Completed runAnnotationFunctions`,
     );
   }
 
@@ -190,32 +201,29 @@ export default class ArielleApp {
       return a.priority - b.priority;
     });
     getLogger().info(
-      `${colorText(COLORS.Magenta, 'Processing Order')} ${Array.from(new Set<string>(arr.map((a) => a.decoratorName)))}`,
+      `${colorText(COLORS.Blue, '[engine]')} -  ${colorText(COLORS.Magenta, 'Processing Order')} ${Array.from(new Set<string>(arr.map((a) => a.decoratorName)))}`,
     );
 
     let last: string = '';
-    for (const obj of arr) {
+    for (const decoratorObj of arr) {
       // bug
-      if (last && obj.decoratorName != last) {
+      if (last && decoratorObj.decoratorName != last) {
         await this.runLifecycleAnnotationFunctions(last);
       }
-      for (const fn of obj.fns || []) {
-        await fn();
+      for (const functionObj of decoratorObj.obj || []) {
+        if (this.isClassExcluded(functionObj.target)) continue;
+        await functionObj.fn();
       }
       getLogger().info(
-        `${colorText(COLORS.Magenta, 'Completed decorator')} ${obj.decoratorName}`,
+        `${colorText(COLORS.Blue, `[${decoratorObj.decoratorName}]`)} - completed`,
       );
-      last = obj.decoratorName;
+      last = decoratorObj.decoratorName;
     }
     if (arr.length == 1) {
       await this.runLifecycleAnnotationFunctions(arr[0].decoratorName);
     }
     await this.runLifecycleAnnotationFunctions('all');
   }
-
-  // public preImport(...Clazzs: any[]) {
-  //   Clazzs.forEach((clazz) => this.instantiateSingleton(clazz));
-  // }
 
   public static getInstanceByAppName(instance = 'default') {
     if (!customGlobal?.appInstance?.[instance]) {
@@ -235,15 +243,17 @@ export default class ArielleApp {
   }
 
   registerBeanDecoratorLifecycle(
+    target: any,
     decoratorName: string,
     cb: () => Promise<void> | void,
   ) {
     if (!this.decoratorLifecycle.has(decoratorName)) {
       this.decoratorLifecycle.set(decoratorName, []);
     }
-    this.decoratorLifecycle.get(decoratorName)?.push(cb);
+    this.decoratorLifecycle.get(decoratorName)?.push({ fn: cb, target });
   }
   registerBeanDecorator(
+    target: any,
     decoratorName: string,
     priority: number,
     cb: () => void,
@@ -252,10 +262,10 @@ export default class ArielleApp {
       this.registeredDecorators.set(decoratorName, {
         priority,
         decoratorName,
-        fns: [],
+        obj: [],
       });
     }
-    this.registeredDecorators.get(decoratorName)?.fns.push(cb);
+    this.registeredDecorators.get(decoratorName)?.obj.push({ fn: cb, target });
   }
   private initialization: Promise<void> = undefined as any;
   public setInitializationPromise(promise: Promise<void>) {
@@ -263,5 +273,19 @@ export default class ArielleApp {
   }
   public waitTillInitialization() {
     return this.initialization;
+  }
+
+  public excludeClass(Clazz: Clazz) {
+    this.excludedClasses.add(Clazz);
+  }
+  public isClassExcluded(Clazz: Clazz) {
+    return (
+      this.excludedClasses.has(Clazz) ||
+      this.excludedClasses.has((Clazz as any).constructor)
+    );
+  }
+
+  public getSingletons() {
+    return Array.from(this.singleton.keys());
   }
 }

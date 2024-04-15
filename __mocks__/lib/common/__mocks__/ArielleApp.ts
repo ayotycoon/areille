@@ -13,6 +13,7 @@ class Mocked {
     string,
     { priority: number; decoratorName: string; fns: any[] }
   >();
+  public  excludedClasses = new Set()
   private instance = "default";
   constructor(instance = "default") {
     this.instance = instance;
@@ -27,6 +28,8 @@ class Mocked {
   getBeanChildren = jest.fn(actualInstance.getBeanChildren);
   getAllSingleton = jest.fn(actualInstance.getAllSingleton);
   processSingletonMethods = jest.fn(actualInstance.processSingletonMethods);
+  excludeClass = jest.fn(actualInstance.excludeClass);
+  isClassExcluded = jest.fn(actualInstance.isClassExcluded);
   setInitializationPromise = jest.fn(actualInstance.setInitializationPromise);
   processAnnotationProcessor = jest.fn(
     actualInstance.processAnnotationProcessor,
@@ -43,7 +46,7 @@ class Mocked {
     return mocked;
   });
   static registerAppInstance = jest.fn();
-  registerBeanDecorator = jest.fn((a, b, c) => c());
+  registerBeanDecorator = jest.fn((a, b, c, d) => d());
   deRegister = jest.fn(() => {
     (global as any).appInstance = { default: {} };
     actualInstance.deRegister();

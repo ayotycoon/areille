@@ -1,5 +1,5 @@
 import DecoratorObj from 'areille/common/classes/DecoratorObj';
-import { getMockedObj } from '../../utils/mockedClass';
+import { getMockedObj } from '../../../utils/mockedClass';
 jest.mock('areille/server/classes/AppServer');
 
 describe('DecoratorObj test ', () => {

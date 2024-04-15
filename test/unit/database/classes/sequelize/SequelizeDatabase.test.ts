@@ -1,22 +1,11 @@
-import * as config from 'areille/common/utilities/config';
-import { KnownENV } from 'areille/common/utilities/config';
 import { SequelizeDatabase } from 'areille/database/classes/sequelize/SequelizeDatabase';
-import { getMockedObj } from '../../../utils/mockedClass';
+import { spyConfig } from '../../../../utils';
+import { getMockedObj } from '../../../../utils/mockedClass';
 
 jest.mock('areille/common/utilities/config');
 jest.mock('areille/server/classes/AppServer');
 jest.mock('areille/common/decorators/component');
 jest.mock('areille/common/decorators/autowired');
-
-function spyConfig(args: Partial<KnownENV>) {
-  jest.spyOn(config, 'default').mockImplementation(() => {
-    return {
-      isProduction: jest.fn(() => args.NODE_ENV === 'production'),
-      isTest: jest.fn(() => args.NODE_ENV !== 'production'),
-      ENV: args as unknown as KnownENV,
-    };
-  });
-}
 
 describe('SequelizeDatabase test ', () => {
   afterEach(() => {
@@ -101,9 +90,63 @@ describe('SequelizeDatabase test ', () => {
     expect(error.message).toBe('error');
   });
 
-  test('test beanMigrationUtils', async () => {
+  test('test beanMigrationUtils with no entity', async () => {
     const instance = new SequelizeDatabase();
     await instance.connect();
+    const connection = instance.getConnection();
+    const defineReturn = {
+      create: jest.fn(() => {
+        return {
+          signature: 'str',
+          status: 'PENDING',
+          save: jest.fn(),
+        };
+      }),
+      sync: jest.fn(),
+      findOne: jest.fn(() => null),
+    };
+
+    (connection.define as jest.Mock).mockImplementation(() => {
+      return defineReturn;
+    });
     const res = await instance.beanMigrationUtils('str');
+    expect(res).toBeDefined();
+    expect(defineReturn.create).toHaveBeenCalled();
+    expect(res.getMigrationFileStatus()).toBe('PENDING');
+  });
+
+  test('test beanMigrationUtils and existing entity', async () => {
+    spyConfig({ SQL_DATABASE_FORCE_SYNC_DB: false });
+    const instance = new SequelizeDatabase();
+    await instance.connect();
+    const connection = instance.getConnection();
+    const defineReturn = {
+      create: jest.fn(() => {
+        return {
+          signature: 'str',
+          status: 'FAIL',
+          save: jest.fn(),
+        };
+      }),
+      sync: jest.fn(),
+      findOne: jest.fn(() => {
+        return {
+          signature: 'str',
+          status: 'FAIL',
+          save: jest.fn(),
+        };
+      }),
+    };
+    (connection.define as jest.Mock).mockImplementation(() => {
+      return defineReturn;
+    });
+    const res = await instance.beanMigrationUtils('str');
+
+    expect(defineReturn.create).not.toHaveBeenCalled();
+    expect(res).toBeDefined();
+    await res.success();
+    expect(res.getMigrationFileStatus()).toBe('SUCCESS');
+    await res.fail();
+    expect(res.getMigrationFileStatus()).toBe('FAIL');
   });
 });

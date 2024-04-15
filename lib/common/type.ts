@@ -1,3 +1,5 @@
+import { KnownENV } from './utilities/config';
+
 export interface CommonConfigArgs {
   instance?: string;
 }
@@ -22,5 +24,9 @@ export interface BeanConfig {
 export interface StartApplicationArgs {
   scanDir?: string;
   shouldScanLib?: boolean;
-  Classes?: Clazz[];
+  classes?: {
+    include?: Clazz[];
+    exclude?: Clazz[];
+  };
+  ENV?: Partial<KnownENV>;
 }

@@ -1,7 +1,7 @@
 import ArielleApp from 'areille/common/ArielleApp';
 import selector from 'areille/common/decorators/selector';
 import getLogger from 'areille/common/utilities/logger';
-import { getMockedObj } from '../utils/mockedClass';
+import { getMockedObj } from '../../utils/mockedClass';
 
 jest.mock('areille/common/ArielleApp');
 jest.mock('areille/server/classes/AppServer');
@@ -23,6 +23,7 @@ describe('selector test ', () => {
     expect(
       ArielleApp.getInstanceByAppName().registerBeanDecorator,
     ).toHaveBeenCalledWith(
+      expect.any(Function),
       'component',
       expect.any(Number),
       expect.any(Function),

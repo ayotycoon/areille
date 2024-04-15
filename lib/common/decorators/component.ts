@@ -10,7 +10,7 @@ export default function component(args?: ComponentArgs) {
     descriptor?: PropertyDescriptor,
   ) => {
     const arielleApp = ArielleApp.getInstanceByAppName();
-    arielleApp.registerBeanDecorator(component.name, 0, () => {
+    arielleApp.registerBeanDecorator(target, component.name, 0, () => {
       const name = args?.name || getConstructorName(target);
       if (arielleApp.getSingleton(target, false)) {
         getLogger().warn(`${name} has already initialized`);

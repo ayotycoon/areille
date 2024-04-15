@@ -1,4 +1,5 @@
 import * as process from 'process';
+import { getRandomInt } from './index';
 
 const blockedFilesOrDir = [
   'test.ts',
@@ -28,7 +29,7 @@ const configFromProcess = () => {
     MONGODB_CONNECTION_URI: process.env.MONGODB_CONNECTION_URI as string,
 
     JWT_EXPIRE_TIME: process.env.JWT_EXPIRE_TIME as string,
-    PORT: process.env.PORT || 6000,
+    PORT: process.env.PORT || getRandomInt(6000, 10000),
 
     ACCESS_TOKEN_SECRET_KEY: process.env.ACCESS_TOKEN_SECRET_KEY as string,
     BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS as string),
@@ -40,10 +41,16 @@ const configFromProcess = () => {
   };
 };
 export type KnownENV = ReturnType<typeof configFromProcess>;
-let environmentConfig = configFromProcess();
 
+const runtimeConfig = {
+  ENV: {},
+};
+export function setConfig({ ENV }: { ENV: Partial<KnownENV> }) {
+  runtimeConfig.ENV = ENV;
+}
 function getConfig() {
-  environmentConfig = configFromProcess();
+  let environmentConfig = configFromProcess();
+  environmentConfig = { ...environmentConfig, ...runtimeConfig.ENV };
 
   return {
     ENV: environmentConfig,

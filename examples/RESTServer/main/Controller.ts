@@ -19,6 +19,25 @@ export default class Controller {
   private paymentMethodSingletonObj = SingletonObj.of(PaymentMethod);
 
   @requestMapping({
+    urlPath: '/auth/login',
+    method: RestMethod.POST,
+    authHandler: 'USER',
+    absolute: true,
+  })
+  public async login({ body }: EnhancedRequest) {
+    return this.service.login(body);
+  }
+  @requestMapping({
+    urlPath: '/auth/register',
+    method: RestMethod.POST,
+    authHandler: 'USER',
+    absolute: true,
+  })
+  public async register({ body }: EnhancedRequest) {
+    return this.service.register(body);
+  }
+
+  @requestMapping({
     urlPath: '/auth/food',
     method: RestMethod.GET,
     authHandler: 'ADMIN',

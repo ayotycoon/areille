@@ -1,5 +1,5 @@
 import ArielleApp from 'areille/common/ArielleApp';
-import app from 'areille/common/decorators/app';
+import appInstance from 'areille/common/decorators/appInstance';
 import component from 'areille/common/decorators/component';
 import { afterDbConnection } from 'areille/database/decorators/afterDbConnection';
 import migration from 'areille/database/decorators/migration';
@@ -7,22 +7,24 @@ import Person from './Person';
 
 @component()
 export class Bootstrap {
-  @app()
+  @appInstance()
   private app!: ArielleApp;
   @afterDbConnection
-  private async init() {
-    const person = await Person.findOne({ where: { username: 'super-admin' } });
+  public async init() {
+    const person = await Person.findOne({
+      where: { username: 'super-admin' },
+    });
     if (person != null) return;
-    await Person.create({ username: 'super-admin', id: 'super-admin' });
+    await Person.create({ username: 'super-admin', password: 'password' });
   }
 
   @migration()
-  private async populateUsers() {
+  public async populateUsers() {
     for (let i = 0; i < 10; i++) {
-      await Person.create({ username: 'user' + i, id: 'user' + i });
+      await Person.create({ username: 'user' + i, password: 'password' });
     }
   }
 
   @afterDbConnection
-  private async getBeans() {}
+  public async getBeans() {}
 }

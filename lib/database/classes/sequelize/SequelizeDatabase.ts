@@ -45,7 +45,7 @@ export class SequelizeDatabase extends Datasource {
     await this.syncDB();
 
     getLogger().info(
-      `${colorText(COLORS.Magenta, 'Datasource SQL')} Connected: ${this.connection.config.host} on port ${this.connection.config.port}`,
+      `${colorText(COLORS.Blue, `[Datasource]`)} - SequelizeDatabase Connected: ${getConfig().ENV.SQL_DATABASE_DIALECT} ${this.connection.config.host} on port ${this.connection.config.port}`,
     );
     return this.connection;
   };

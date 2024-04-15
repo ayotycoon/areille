@@ -10,7 +10,7 @@ import { Datasource } from '../classes/Datasource';
 export default function migration(id: string = '') {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const arielleApp = ArielleApp.getInstanceByAppName();
-    arielleApp.registerBeanDecorator(migration.name, 11, () => {
+    arielleApp.registerBeanDecorator(target, migration.name, 9, () => {
       const fileSignature = id + `#${propertyKey}`;
       const method = descriptor.value;
       descriptor.value = async (...args: any) => {
@@ -21,7 +21,11 @@ export default function migration(id: string = '') {
         try {
           await method.apply(bean || target, args);
           await mig.success();
+          getLogger().info(
+            `${colorText(COLORS.Blue, '[migration]')} -  ${fileSignature} - ${colorText(COLORS.Green, 'success')}`,
+          );
         } catch (e) {
+          getLogger().error(`${className}.${propertyKey} - failed `, e);
           await mig.fail();
         }
       };
@@ -35,15 +39,19 @@ export default function migration(id: string = '') {
   };
 }
 
-async function processMigration(arielleApp: ArielleApp, fileName: string) {
+async function processMigration(arielleApp: ArielleApp, fileSignature: string) {
   const db = arielleApp.getAutoWireSingleton(Datasource);
-  const utils = await db.beanMigrationUtils(fileName);
+  const utils = await db.beanMigrationUtils(fileSignature);
   const status = utils.getMigrationFileStatus();
   if (status === 'SUCCESS') {
-    getLogger().info(`Ignoring migration ${colorText(COLORS.Red, fileName)}`);
+    getLogger().info(
+      `${colorText(COLORS.Blue, '[migration]')} -  ${fileSignature} - ${colorText(COLORS.Cyan, 'ignored')}`,
+    );
     return;
   }
-  getLogger().info(`migrating ${colorText(COLORS.Green, fileName)}`);
+  getLogger().info(
+    `${colorText(COLORS.Blue, '[migration]')} -  ${fileSignature} - ${colorText(COLORS.Cyan, 'attempting')}`,
+  );
   return {
     success: () => utils.success(),
     fail: () => utils.fail(),
