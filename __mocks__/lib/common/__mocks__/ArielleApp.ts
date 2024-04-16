@@ -13,7 +13,7 @@ class Mocked {
     string,
     { priority: number; decoratorName: string; fns: any[] }
   >();
-  public  excludedClasses = new Set()
+  public excludedClasses = new Set();
   private instance = "default";
   constructor(instance = "default") {
     this.instance = instance;

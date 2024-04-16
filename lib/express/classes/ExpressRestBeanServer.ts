@@ -12,10 +12,10 @@ import { ExpressRouteProcessor } from './ExpressRouteProcessor';
 
 @component({ order: -2 })
 export default class ExpressRestBeanServer extends AppServer {
-  private app!: Express;
-  private server!: any;
+  protected app!: Express;
+  protected server!: any;
   @autowired()
-  private expressRouteProcessor = ExpressRouteProcessor.prototype;
+  protected expressRouteProcessor = ExpressRouteProcessor.prototype;
 
   async stop() {
     super.stop();
@@ -29,7 +29,7 @@ export default class ExpressRestBeanServer extends AppServer {
     await serverPromise();
     this.server = null;
   }
-  private config() {
+  protected config() {
     this.app = express();
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json({ limit: '50mb' }));
@@ -58,7 +58,7 @@ export default class ExpressRestBeanServer extends AppServer {
     await this.initialization;
   }
 
-  private initialization: Promise<void> = undefined as any;
+  protected initialization: Promise<void> = undefined as any;
   public async waitTillInitialization() {
     await super.waitTillInitialization();
     return this.initialization;

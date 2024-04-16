@@ -9,12 +9,14 @@
     "test:it": "npm run pre-start && cd test && jest",
     "tsc": "NODE_OPTIONS=--max-old-space-size=1024 tsc",
     "lint": "prettier . --write && eslint ./ --fix",
-    "test": "jest --verbose  --coverage",
-    "publish": "cd lib && npm version patch && tsc && cp package.json dist && cd dist && npm publish --access public"
+    "test": "TEST_MODE=all jest --verbose  --coverage",
+    "publish": "cd lib && npm version patch && tsc && cp package.json dist && cd dist && npm publish --access public",
+    "prepare": "husky",
+    "postinstall": "npx husky init"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm version patch && git add -A ."
+      "pre-commit": "npm run lint && npm test && git add -A ."
     }
   },
   "author": "Ayokunle Sunmola",
