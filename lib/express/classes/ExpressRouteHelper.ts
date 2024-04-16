@@ -25,33 +25,35 @@ export class ExpressRouteHelper {
   ) => {
     req.filteredQuery = new FilteredQuery(req.query as any);
     try {
-      const obj = {
-        success: 0,
-        error: '',
-      };
-      for (const authHandler of authHandlers) {
-        if (authHandler === 'OPEN') {
-          obj.success++;
-          continue;
+      if (authHandlers && authHandlers.length > 0) {
+        const obj = {
+          success: 0,
+          error: '',
+        };
+        for (const authHandler of authHandlers) {
+          if (authHandler === 'OPEN') {
+            obj.success++;
+            continue;
+          }
+          // think about handling the multiple usecases
+          const person = await swallowError(
+            () =>
+              this.authenticationProvider.authentication.getAuthenticatedPersonWithAuthHandler(
+                req,
+                authHandler,
+                roles,
+              ),
+            obj,
+          );
+          if (person) {
+            req.person = person;
+            obj.success++;
+            continue;
+          }
         }
-        // think about handling the multiple usecases
-        const person = await swallowError(
-          () =>
-            this.authenticationProvider.authentication.getAuthenticatedPersonWithAuthHandler(
-              req,
-              authHandler,
-              roles,
-            ),
-          obj,
-        );
-        if (person) {
-          req.person = person;
-          obj.success++;
-          continue;
+        if (!obj.success) {
+          throw new GenericError(obj.error, 401);
         }
-      }
-      if (!obj.success) {
-        throw obj.error;
       }
 
       const reply = await cb(req);

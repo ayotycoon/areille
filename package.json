@@ -10,7 +10,7 @@
     "tsc": "NODE_OPTIONS=--max-old-space-size=1024 tsc",
     "lint": "prettier . --write && eslint ./ --fix",
     "test": "TEST_MODE=all jest --verbose  --coverage",
-    "publish": "cd lib && npm version patch && tsc && cp package.json dist && cd dist && npm publish --access public",
+    "publish": "cd lib && npm version patch && tsc && cp package.json dist && cd dist && npm publish --access public && cd .. && rm -f -r dist ",
     "prepare": "husky",
     "postinstall": "npx husky init"
   },
