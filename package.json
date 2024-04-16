@@ -16,7 +16,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm test && git add -A ."
+      "pre-commit": "rm -f -r lib/dist &&  npm run lint && npm test && git add -A ."
     }
   },
   "author": "Ayokunle Sunmola",

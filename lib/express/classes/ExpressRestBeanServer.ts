@@ -29,6 +29,7 @@ export default class ExpressRestBeanServer extends AppServer {
     await serverPromise();
     this.server = null;
   }
+  protected postConfig() {}
   protected config() {
     this.app = express();
     this.app.use(express.urlencoded({ extended: true }));
@@ -40,6 +41,7 @@ export default class ExpressRestBeanServer extends AppServer {
     const fn = async () => {
       super.start();
       this.config();
+      this.postConfig();
       this.expressRouteProcessor.process(this.arielleApp, this.app);
       await this.beforeServerStart();
       const serverPromise = () =>
