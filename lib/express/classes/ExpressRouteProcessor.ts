@@ -30,6 +30,7 @@ export class ExpressRouteProcessor {
         urlPath: string;
         propertyKey: string;
         absolute: boolean;
+        prepend: string;
         roles: string[];
       }>('requestMapping') || [];
 
@@ -37,10 +38,18 @@ export class ExpressRouteProcessor {
       const controllerRouter = express.Router();
       for (const requestMapping of requestMappings) {
         if (restController.target !== requestMapping.target) continue;
+        if (requestMapping?.args.absolute && requestMapping?.args.prepend)
+          throw new Error('prepend and absolute cannot be used together');
+        const requestMappingUrl = requestMapping.args.urlPath;
         const isAbsolute = requestMapping?.args.absolute;
-        const fullUrl = isAbsolute
+        const prepend = requestMapping?.args.prepend;
+
+        let fullUrl = isAbsolute
           ? requestMapping.args?.urlPath
           : `${restController.args?.urlPath}${requestMapping.args?.urlPath}`;
+        if (prepend) {
+          fullUrl = `${prepend}${fullUrl}`;
+        }
         const method = requestMapping.args.method;
         let authHandlers = Array.isArray(requestMapping.args?.authHandler)
           ? requestMapping.args?.authHandler
@@ -70,14 +79,27 @@ export class ExpressRouteProcessor {
         const authHandlersString = authHandlers?.join(',');
 
         if (isAbsolute) {
-          app[method](
-            requestMapping.args.urlPath,
-            (req: Request, res: Response) =>
-              authenticationMethod(
-                req as unknown as any,
-                res,
-                requestMapping.fn as any,
-              ),
+          app[method](requestMappingUrl, (req: Request, res: Response) =>
+            authenticationMethod(
+              req as unknown as any,
+              res,
+              requestMapping.fn as any,
+            ),
+          );
+          getLogger().info(
+            `${colorText(COLORS.Blue, `[routing]`)} - ${requestMapping.args?.method} ${colorText(COLORS.Magenta, authHandlersString)} ${fullUrl}`,
+          );
+
+          continue;
+        }
+
+        if (prepend) {
+          app[method](fullUrl, (req: Request, res: Response) =>
+            authenticationMethod(
+              req as unknown as any,
+              res,
+              requestMapping.fn as any,
+            ),
           );
           getLogger().info(
             `${colorText(COLORS.Blue, `[routing]`)} - ${requestMapping.args?.method} ${colorText(COLORS.Magenta, authHandlersString)} ${fullUrl}`,
@@ -90,7 +112,7 @@ export class ExpressRouteProcessor {
         );
 
         controllerRouter[method](
-          requestMapping.args.urlPath,
+          requestMappingUrl,
           (req: Request, res: Response) =>
             authenticationMethod(
               req as unknown as any,

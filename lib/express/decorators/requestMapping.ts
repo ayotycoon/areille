@@ -16,6 +16,7 @@ interface Args {
    * @default false
    */
   absolute?: boolean;
+  prepend?: string;
   roles?: string[];
 }
 
@@ -36,6 +37,7 @@ export function requestMapping(
     authHandler = 'OPEN',
     absolute = false,
     roles,
+    prepend,
   } = options;
 
   const arielleApp = ArielleApp.getInstanceByAppName(args?.instance);
@@ -62,6 +64,7 @@ export function requestMapping(
         descriptor,
         absolute,
         roles,
+        prepend,
       });
     });
   };
