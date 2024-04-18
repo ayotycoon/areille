@@ -64,3 +64,8 @@ export default function (forceReload = false) {
   if (!cache || forceReload) cache = getConfig();
   return cache;
 }
+
+export const hasEnvConfig = (str: string, forceReload = false) => {
+  if (!cache || forceReload) cache = getConfig();
+  return (cache.ENV as any)[str] != undefined;
+};

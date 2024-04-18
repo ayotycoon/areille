@@ -5,9 +5,9 @@ import { restController } from './decorators/restController';
 import JsonResponse from './utilities/classes/response/JsonResponse';
 
 @component()
-@restController('/tools')
+@restController()
 export class ToolsController {
-  @requestMapping('/')
+  @requestMapping({ urlPath: '/health', absolute: true })
   public getGlobalBean() {
     return new JsonResponse(ArielleApp.getInstanceByAppName().toString());
   }

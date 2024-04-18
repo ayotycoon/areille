@@ -1,6 +1,7 @@
 import ArielleApp from 'areille/common/ArielleApp';
 import appInstance from 'areille/common/decorators/appInstance';
 import component from 'areille/common/decorators/component';
+import value from 'areille/common/decorators/value';
 import { afterDbConnection } from 'areille/database/decorators/afterDbConnection';
 import migration from 'areille/database/decorators/migration';
 import Person from './Person';
@@ -9,6 +10,8 @@ import Person from './Person';
 export class Bootstrap {
   @appInstance()
   private app!: ArielleApp;
+  @value('PORT')
+  private variable!: string;
   @afterDbConnection
   public async init() {
     const person = await Person.findOne({
