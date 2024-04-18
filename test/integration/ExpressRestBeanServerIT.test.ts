@@ -37,7 +37,7 @@ describe('ExpressRestBeanServerIT', () => {
     const bean = arielleApp.getAutoWireSingleton(AppServer);
     expect(bean).toBeDefined();
     expect(bean instanceof ExpressRestBeanServer).toBeTruthy();
-    const APP_URL = `http://localhost:${getConfig().ENV.PORT}/health`;
+    const APP_URL = `http://localhost:${getConfig().env.PORT}/health`;
     const res = await axios.get(APP_URL);
     expect(res.status).toBe(200);
   });

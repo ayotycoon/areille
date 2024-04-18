@@ -1,4 +1,4 @@
-import { KnownENV } from './utilities/config';
+import { KnownEnv } from './utilities/config';
 
 export interface CommonConfigArgs {
   instance?: string;
@@ -28,5 +28,5 @@ export interface StartApplicationArgs {
     include?: Clazz[];
     exclude?: Clazz[];
   };
-  ENV?: Partial<KnownENV>;
+  env?: Partial<KnownEnv>;
 }

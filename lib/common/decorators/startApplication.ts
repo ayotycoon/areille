@@ -6,9 +6,8 @@ import { StartApplicationArgs } from '../type';
 import { importAnnotatedModules } from '../utilities/scanner';
 
 async function fn(args: { target: any } & StartApplicationArgs) {
-  if (args.ENV) {
-    setConfig({ ENV: args.ENV });
-  }
+  if (args.env) setConfig({ env: args.env });
+
   const libDir = path.resolve(__dirname, '../../');
   const arielleApp = ArielleApp.getInstanceByAppName();
   await importAnnotatedModules(arielleApp, { ...args, libDir });

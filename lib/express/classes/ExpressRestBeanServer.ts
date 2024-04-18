@@ -46,10 +46,10 @@ export default class ExpressRestBeanServer extends AppServer {
       await this.beforeServerStart();
       const serverPromise = () =>
         new Promise((resolve) => {
-          this.server = this.app.listen(getConfig().ENV.PORT, async () => {
-            resolve(getConfig().ENV.PORT);
+          this.server = this.app.listen(getConfig().env.PORT, async () => {
+            resolve(getConfig().env.PORT);
             getLogger().info(
-              `${colorText(COLORS.Blue, `[AppServer]`)} - express Server started on port ${getConfig().ENV.PORT} [env=${getConfig().ENV.NODE_ENV}]`,
+              `${colorText(COLORS.Blue, `[AppServer]`)} - express Server started on port ${getConfig().env.PORT} [env=${getConfig().env.NODE_ENV}]`,
             );
             await this.afterServerStart();
           });

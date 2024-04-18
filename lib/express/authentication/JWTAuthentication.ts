@@ -23,7 +23,7 @@ export class JWTAuthentication extends Authentication {
     return new Promise(function (resolve, reject) {
       jwt.sign(
         payload,
-        getConfig().ENV.ACCESS_TOKEN_SECRET_KEY,
+        getConfig().env.ACCESS_TOKEN_SECRET_KEY,
         {},
         (err: Error | null, encoded: string | undefined) => {
           if (err === null && encoded !== undefined) {
@@ -40,7 +40,7 @@ export class JWTAuthentication extends Authentication {
     return new Promise((resolve, reject) =>
       jwt.verify(
         token,
-        getConfig().ENV.ACCESS_TOKEN_SECRET_KEY as jwt.Secret,
+        getConfig().env.ACCESS_TOKEN_SECRET_KEY as jwt.Secret,
         async (err: VerifyErrors | null, decodedUser: any) => {
           if (err) {
             const errorMessage =

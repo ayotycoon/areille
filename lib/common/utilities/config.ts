@@ -1,13 +1,7 @@
 import * as process from 'process';
 import { getRandomInt } from './index';
 
-const blockedFilesOrDir = [
-  'test.ts',
-  `node_modules`,
-  `decorators`,
-  `.d.ts`,
-  'getLogger().ts',
-];
+const blockedFilesOrDir = ['test.ts', `node_modules`, `decorators`, `.d.ts`];
 const configFromProcess = () => {
   return {
     NODE_ENV: process.env.NODE_ENV as string,
@@ -40,20 +34,20 @@ const configFromProcess = () => {
     REST_PASSWORD_OTP_EXPIRE_TIME: process.env.REST_PASSWORD_OTP_EXPIRE_TIME,
   };
 };
-export type KnownENV = ReturnType<typeof configFromProcess>;
+export type KnownEnv = ReturnType<typeof configFromProcess>;
 
 const runtimeConfig = {
-  ENV: {},
+  env: {},
 };
-export function setConfig({ ENV }: { ENV: Partial<KnownENV> }) {
-  runtimeConfig.ENV = ENV;
+export function setConfig({ env }: { env: Partial<KnownEnv> }) {
+  runtimeConfig.env = env;
 }
 function getConfig() {
   let environmentConfig = configFromProcess();
-  environmentConfig = { ...environmentConfig, ...runtimeConfig.ENV };
+  environmentConfig = { ...environmentConfig, ...runtimeConfig.env };
 
   return {
-    ENV: environmentConfig,
+    env: environmentConfig,
     isProduction: () => environmentConfig.NODE_ENV === 'production',
     isTest: () => environmentConfig.NODE_ENV === 'test',
   };
@@ -67,5 +61,5 @@ export default function (forceReload = false) {
 
 export const hasEnvConfig = (str: string, forceReload = false) => {
   if (!cache || forceReload) cache = getConfig();
-  return (cache.ENV as any)[str] != undefined;
+  return (cache.env as any)[str] != undefined;
 };

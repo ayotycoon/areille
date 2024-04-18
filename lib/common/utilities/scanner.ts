@@ -55,7 +55,7 @@ export async function importAnnotatedModules(
 ) {
   async function importer(dir: string) {
     const config = {
-      blockedFilesOrDir: getConfig().ENV.IGNORE_DIR,
+      blockedFilesOrDir: getConfig().env.IGNORE_DIR,
       originalDir: dir,
     };
     const files = getFiles(config, dir);

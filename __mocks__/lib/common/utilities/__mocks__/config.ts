@@ -1,6 +1,6 @@
 export default () => {
   return {
-    ENV: {} as any,
+    env: {} as any,
     isProduction: jest.fn(),
     isTest: jest.fn(),
   };

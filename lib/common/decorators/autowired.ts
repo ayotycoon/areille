@@ -15,7 +15,7 @@ export default function autowired(args?: AutowiredArgs) {
   ) => {
     const arielleApp = ArielleApp.getInstanceByAppName(args?.instance);
 
-    arielleApp.registerBeanDecorator(target, autowired.name, 1, () => {
+    arielleApp.registerBeanDecorator(target, autowired.name, 2, () => {
       arielleApp.processSingletonMethods(
         autowired.name,
         target,

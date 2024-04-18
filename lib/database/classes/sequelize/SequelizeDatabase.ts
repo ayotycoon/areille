@@ -27,16 +27,16 @@ export class SequelizeDatabase extends Datasource {
   public connect = async () => {
     if (this.connection) return this.connection;
     this.connection = new Sequelize(
-      getConfig().ENV.SQL_DATABASE,
-      getConfig().ENV.SQL_DATABASE_USERNAME,
-      getConfig().ENV.SQL_DATABASE_PASSWORD,
+      getConfig().env.SQL_DATABASE,
+      getConfig().env.SQL_DATABASE_USERNAME,
+      getConfig().env.SQL_DATABASE_PASSWORD,
       {
-        host: getConfig().ENV.SQL_DATABASE_HOST,
-        port: getConfig().ENV.SQL_DATABASE_PORT,
-        dialect: getConfig().ENV.SQL_DATABASE_DIALECT as any,
-        storage: getConfig().ENV.SQL_DATABASE_STORAGE as any,
+        host: getConfig().env.SQL_DATABASE_HOST,
+        port: getConfig().env.SQL_DATABASE_PORT,
+        dialect: getConfig().env.SQL_DATABASE_DIALECT as any,
+        storage: getConfig().env.SQL_DATABASE_STORAGE as any,
         logging: (msg) =>
-          getConfig().ENV.SQL_LOG_QUERY && getLogger().debug(msg),
+          getConfig().env.SQL_LOG_QUERY && getLogger().debug(msg),
       },
     );
 
@@ -45,13 +45,13 @@ export class SequelizeDatabase extends Datasource {
     await this.syncDB();
 
     getLogger().info(
-      `${colorText(COLORS.Blue, `[Datasource]`)} - SequelizeDatabase Connected: ${getConfig().ENV.SQL_DATABASE_DIALECT} ${this.connection.config.host} on port ${this.connection.config.port}`,
+      `${colorText(COLORS.Blue, `[Datasource]`)} - SequelizeDatabase Connected: ${getConfig().env.SQL_DATABASE_DIALECT} ${this.connection.config.host} on port ${this.connection.config.port}`,
     );
     return this.connection;
   };
 
   protected async syncDB() {
-    if (getConfig().ENV.SQL_DATABASE_FORCE_SYNC_DB) {
+    if (getConfig().env.SQL_DATABASE_FORCE_SYNC_DB) {
       await this.connection.sync({ force: true });
     } else {
       await this.connection.sync();
@@ -138,7 +138,7 @@ export class SequelizeDatabase extends Datasource {
         freezeTableName: true,
       },
     );
-    if (getConfig().ENV.SQL_DATABASE_FORCE_SYNC_DB) {
+    if (getConfig().env.SQL_DATABASE_FORCE_SYNC_DB) {
       await SystemMigrationTracker.sync({ force: true });
     } else {
       await SystemMigrationTracker.sync();
