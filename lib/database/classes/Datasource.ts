@@ -1,6 +1,7 @@
 import { Sequelize, Transaction } from 'sequelize';
 import autowired from '../../common/decorators/autowired';
 import component from '../../common/decorators/component';
+import { EnhancedRequest } from '../../express/utilities/classes/EnhancedRequest';
 import { DatasourceSelector } from '../DatasourceSelector';
 import Person from './Person';
 
@@ -30,6 +31,7 @@ export class Datasource {
     return null as unknown as T;
   }
   public async findPersonByRole(args: {
+    req: EnhancedRequest;
     id: string | number;
     roles: string[];
     authHandler: string;

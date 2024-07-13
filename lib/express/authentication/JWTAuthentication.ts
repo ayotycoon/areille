@@ -56,10 +56,12 @@ export class JWTAuthentication extends Authentication {
   private registerAllHandlers() {
     const defaultHandler = async (
       handlerName: string,
+      req: EnhancedRequest,
       decodedPerson: any,
       roles: string[],
     ) => {
       const person = await this.datasourceProvider.datasource.findPersonByRole({
+        req,
         id: decodedPerson.id || decodedPerson.userId,
         roles,
         authHandler: handlerName,
@@ -69,14 +71,9 @@ export class JWTAuthentication extends Authentication {
     };
 
     this.authenticationHandlerMap.set(
-      'ADMIN',
-      (decodedPerson: any, roles: string[]) =>
-        defaultHandler('ADMIN', decodedPerson, roles),
-    );
-    this.authenticationHandlerMap.set(
       'USER',
-      (decodedPerson: any, roles: string[]) =>
-        defaultHandler('USER', decodedPerson, roles),
+      (req: EnhancedRequest, decodedPerson: any, roles: string[]) =>
+        defaultHandler('USER', req, decodedPerson, roles),
     );
   }
 
@@ -95,7 +92,7 @@ export class JWTAuthentication extends Authentication {
     const decodedPerson: any = await this.parseToken(token);
     const handler = this.authenticationHandlerMap.get(authHandler);
     if (!handler) throw new Error(`invalid handler '${authHandler}'`);
-    const person = await handler(decodedPerson, roles);
+    const person = await handler(req, decodedPerson, roles);
     if (!person) {
       throw new GenericError('unauthorized');
     }

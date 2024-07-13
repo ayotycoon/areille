@@ -51,6 +51,7 @@ export class ExpressRouteProcessor {
           fullUrl = `${prepend}${fullUrl}`;
         }
         const method = requestMapping.args.method;
+        const roles = requestMapping.args.roles;
         let authHandlers = Array.isArray(requestMapping.args?.authHandler)
           ? requestMapping.args?.authHandler
           : [requestMapping.args?.authHandler];
@@ -84,6 +85,7 @@ export class ExpressRouteProcessor {
               req as unknown as any,
               res,
               requestMapping.fn as any,
+              roles,
             ),
           );
           getLogger().info(
@@ -99,6 +101,7 @@ export class ExpressRouteProcessor {
               req as unknown as any,
               res,
               requestMapping.fn as any,
+              roles,
             ),
           );
           getLogger().info(
@@ -118,6 +121,7 @@ export class ExpressRouteProcessor {
               req as unknown as any,
               res,
               requestMapping.fn as any,
+              roles,
             ),
         );
       }

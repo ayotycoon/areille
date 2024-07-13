@@ -288,4 +288,12 @@ export default class ArielleApp {
   public getSingletons() {
     return Array.from(this.singleton.keys());
   }
+  private jsonCache: any = null;
+  public toJSON() {
+    if (this.jsonCache) return this.jsonCache;
+    this.jsonCache = {
+      instance: this.instance,
+    };
+    return this.jsonCache;
+  }
 }

@@ -12,7 +12,7 @@ describe('SequelizeDatabase test ', () => {
     jest.clearAllMocks();
   });
   test('should  be able to open and close conn', async () => {
-    spyConfig({ SQL_LOG_QUERY: true });
+    spyConfig({ env: { SQL_LOG_QUERY: true } });
     const instance = new SequelizeDatabase();
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -31,14 +31,14 @@ describe('SequelizeDatabase test ', () => {
   });
 
   test('should  be able to open and sync db', async () => {
-    spyConfig({ SQL_DATABASE_FORCE_SYNC_DB: true });
+    spyConfig({ env: { SQL_DATABASE_FORCE_SYNC_DB: true } });
     const instance = new SequelizeDatabase();
     await instance.connect();
     expect(instance.getConnection().sync).toBeCalledWith({ force: true });
   });
 
   test('should  be able to register models', async () => {
-    spyConfig({ SQL_DATABASE_FORCE_SYNC_DB: true });
+    spyConfig({ env: { SQL_DATABASE_FORCE_SYNC_DB: true } });
     const cb = jest.fn(() => {});
     const Clazz = getMockedObj().Clazz as any;
     Clazz.init = jest.fn();
@@ -116,7 +116,7 @@ describe('SequelizeDatabase test ', () => {
   });
 
   test('test beanMigrationUtils and existing entity', async () => {
-    spyConfig({ SQL_DATABASE_FORCE_SYNC_DB: false });
+    spyConfig({ env: { SQL_DATABASE_FORCE_SYNC_DB: false } });
     const instance = new SequelizeDatabase();
     await instance.connect();
     const connection = instance.getConnection();

@@ -9,22 +9,7 @@ const getLogger = () => {
   initialized = true;
   Logger.useDefaults();
 
-  const consoleHandler = Logger.createDefaultHandler({
-    formatter: function (messages) {
-      messages.unshift(new Date().toUTCString());
-    },
-  });
-  (Logger as unknown as GlobalLogger).setLevel(
-    (Logger as unknown as GlobalLogger).DEBUG,
-  );
-
-  if (!getConfig().isTest()) {
-    (Logger as unknown as GlobalLogger).setHandler(
-      function (messages, context) {
-        consoleHandler(messages, context);
-      },
-    );
-  }
+  getConfig(true).handlers.logger(Logger as unknown as GlobalLogger);
   return logger;
 };
 

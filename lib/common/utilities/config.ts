@@ -1,4 +1,6 @@
+import { GlobalLogger } from 'js-logger';
 import * as process from 'process';
+import { RuntimeConfigArgs } from '../type';
 import { getRandomInt } from './index';
 
 const blockedFilesOrDir = ['test.ts', `node_modules`, `decorators`, `.d.ts`];
@@ -19,6 +21,7 @@ const configFromProcess = () => {
     SQL_DATABASE_FORCE_SYNC_DB:
       process.env.SQL_DATABASE_FORCE_SYNC_DB === 'true',
     SQL_LOG_QUERY: process.env.SQL_LOG_QUERY === 'true',
+    LOG_WITH_CLASS_NAMES: process.env.LOG_WITH_CLASS_NAMES === 'true',
 
     MONGODB_CONNECTION_URI: process.env.MONGODB_CONNECTION_URI as string,
 
@@ -36,11 +39,34 @@ const configFromProcess = () => {
 };
 export type KnownEnv = ReturnType<typeof configFromProcess>;
 
-const runtimeConfig = {
-  env: {},
+const runtimeConfig: RuntimeConfigArgs = {
+  env: {} as any,
+  handlers: {
+    logger: (Logger: GlobalLogger) => {
+      const consoleHandler = Logger.createDefaultHandler({
+        formatter: function (messages) {
+          messages.unshift(new Date().toUTCString());
+        },
+      });
+      Logger.setLevel(Logger.DEBUG);
+
+      if (!getConfig().isTest()) {
+        (Logger as unknown as GlobalLogger).setHandler(
+          function (messages, context) {
+            consoleHandler(messages, context);
+          },
+        );
+      }
+    },
+  },
 };
-export function setConfig({ env }: { env: Partial<KnownEnv> }) {
-  runtimeConfig.env = env;
+export function setConfig({ env, handlers }: Partial<RuntimeConfigArgs>) {
+  if (env) {
+    runtimeConfig.env = env;
+  }
+  if (handlers?.logger) {
+    runtimeConfig.handlers.logger = handlers.logger;
+  }
 }
 function getConfig() {
   let environmentConfig = configFromProcess();
@@ -48,6 +74,7 @@ function getConfig() {
 
   return {
     env: environmentConfig,
+    handlers: runtimeConfig.handlers,
     isProduction: () => environmentConfig.NODE_ENV === 'production',
     isTest: () => environmentConfig.NODE_ENV === 'test',
   };
