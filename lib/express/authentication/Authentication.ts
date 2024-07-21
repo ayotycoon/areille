@@ -1,15 +1,15 @@
 import component from '../../common/decorators/component';
-import Person from '../../database/classes/Person';
+import Principal from '../../database/classes/Principal';
 import { EnhancedRequest } from '../utilities/classes/EnhancedRequest';
 
 @component()
 export class Authentication {
-  public getAuthenticatedPersonWithAuthHandler = async (
+  public getAuthenticatedPrincipal = async (
     req: EnhancedRequest,
     authHandler: string,
     roles: string[] = [],
   ) => {
-    const p = new Person();
+    const p = new Principal();
     p.roles = roles;
     return p;
   };

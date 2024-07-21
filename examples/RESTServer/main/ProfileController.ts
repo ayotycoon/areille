@@ -13,8 +13,8 @@ export default class ProfileController {
     authHandler: 'ADMIN',
     absolute: true,
   })
-  public async getLoggedInUser({ person }: EnhancedRequest) {
-    return person;
+  public async getLoggedInUser({ principal }: EnhancedRequest) {
+    return principal;
   }
 
   @requestMapping({
@@ -22,7 +22,7 @@ export default class ProfileController {
     method: RestMethod.GET,
     absolute: true,
   })
-  public async getLoggedInUser2({ person }: EnhancedRequest) {
-    return person;
+  public async getLoggedInUser2({ principal }: EnhancedRequest) {
+    return principal;
   }
 }

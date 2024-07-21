@@ -60,14 +60,14 @@ export class JWTAuthentication extends Authentication {
       decodedPerson: any,
       roles: string[],
     ) => {
-      const person = await this.datasourceProvider.datasource.findPersonByRole({
+      const principal = await this.datasourceProvider.datasource.findPrincipal({
         req,
         id: decodedPerson.id || decodedPerson.userId,
         roles,
         authHandler: handlerName,
       });
 
-      return person;
+      return principal;
     };
 
     this.authenticationHandlerMap.set(
@@ -77,7 +77,7 @@ export class JWTAuthentication extends Authentication {
     );
   }
 
-  public getAuthenticatedPersonWithAuthHandler = async (
+  public getAuthenticatedPrincipal = async (
     req: EnhancedRequest,
     authHandler: string,
     roles: string[] = [],
@@ -92,11 +92,11 @@ export class JWTAuthentication extends Authentication {
     const decodedPerson: any = await this.parseToken(token);
     const handler = this.authenticationHandlerMap.get(authHandler);
     if (!handler) throw new Error(`invalid handler '${authHandler}'`);
-    const person = await handler(req, decodedPerson, roles);
-    if (!person) {
+    const principal = await handler(req, decodedPerson, roles);
+    if (!principal) {
       throw new GenericError('unauthorized');
     }
-    person.handler = authHandler;
-    return person;
+    principal.handler = authHandler;
+    return principal;
   };
 }

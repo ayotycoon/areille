@@ -3,7 +3,7 @@ import autowired from '../../common/decorators/autowired';
 import component from '../../common/decorators/component';
 import { EnhancedRequest } from '../../express/utilities/classes/EnhancedRequest';
 import { DatasourceSelector } from '../DatasourceSelector';
-import Person from './Person';
+import Principal from './Principal';
 
 @component()
 export class Datasource {
@@ -30,13 +30,13 @@ export class Datasource {
   ) {
     return null as unknown as T;
   }
-  public async findPersonByRole(args: {
+  public async findPrincipal(args: {
     req: EnhancedRequest;
     id: string | number;
     roles: string[];
     authHandler: string;
-  }): Promise<Person | null> {
-    return this.datasourceProvider.datasourceAuthHandler.findPersonByRole(args);
+  }): Promise<Principal | null> {
+    return this.datasourceProvider.datasourceAuthHandler.findPrincipal(args);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,8 +1,8 @@
-import Person from '../../../database/classes/Person';
+import Principal from '../../../database/classes/Principal';
 import { FilteredQuery } from './FilteredQuery';
 
 export class EnhancedRequest<B = any, P = any, Q = any> extends Request {
-  public person?: Person;
+  public principal?: Principal;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   public body: B = {};

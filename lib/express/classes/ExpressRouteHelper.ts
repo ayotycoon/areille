@@ -36,17 +36,17 @@ export class ExpressRouteHelper {
             continue;
           }
           // think about handling the multiple usecases
-          const person = await swallowError(
+          const principal = await swallowError(
             () =>
-              this.authenticationProvider.authentication.getAuthenticatedPersonWithAuthHandler(
+              this.authenticationProvider.authentication.getAuthenticatedPrincipal(
                 req,
                 authHandler,
                 roles,
               ),
             obj,
           );
-          if (person) {
-            req.person = person;
+          if (principal) {
+            req.principal = principal;
             obj.success++;
             continue;
           }

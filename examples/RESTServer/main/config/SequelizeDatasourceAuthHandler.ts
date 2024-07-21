@@ -1,12 +1,12 @@
 import component from 'areille/common/decorators/component';
 import { DatasourceAuthHandler } from 'areille/database/classes/DatasourceAuthHandler';
-import Person from 'areille/database/classes/Person';
+import Principal from 'areille/database/classes/Principal';
 import { EnhancedRequest } from 'areille/express/utilities/classes/EnhancedRequest';
 import SequelizePerson from '../Person';
 
 @component()
 export class SequelizeDatasourceAuthHandler extends DatasourceAuthHandler {
-  public async findPersonByRole(args: {
+  public async findPrincipal(args: {
     req: EnhancedRequest;
     id: string | number;
     roles: string[];
@@ -19,9 +19,9 @@ export class SequelizeDatasourceAuthHandler extends DatasourceAuthHandler {
     });
     if (!sequelizePerson) return null;
 
-    const person = new Person();
-    person.id = sequelizePerson.id;
+    const principal = new Principal();
+    principal.id = sequelizePerson.id;
 
-    return person;
+    return principal;
   }
 }
